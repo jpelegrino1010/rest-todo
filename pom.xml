@@ -62,7 +62,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>${artifactId}-${appVersion}</finalName>
+        <finalName>${artifactId}</finalName>
     </build>
 
 </project>
