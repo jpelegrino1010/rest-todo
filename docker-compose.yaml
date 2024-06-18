@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  app-backend:
+    image: jpelegrino/rest-todo:1.1
+    container_name: todo-rest
+    depends_on:
+      - todo-db-service
+    environment:
+      DB_HOST: todo-db-service
+      DB_USER: root
+      DB_PASS: admin
+      DB_NAME: todoDB
+      APP_PORT: "8022"
+    ports:
+      - "8022:8022"
+    expose:
+      - "8022"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+
+    networks:
+      - todo-network
+
+
+  app-frontend:
+    image: jpelegrino/react-todo:1.9
+    container_name: react-todo
+    depends_on:
+      - app-backend
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 30s
+    ports:
+      - "3000:3000"
+    networks:
+      - todo-network
+
+
+  todo-db-service:
+    image: mysql:8.0
+    container_name: todo-db
+    restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin"
+      MYSQL_DATABASE: "todoDB"
+    networks:
+      - todo-network
+    volumes:
+      - todo-data:/var/lib/mysql
+
+
+networks:
+  todo-network:
+
+volumes:
+  todo-data:
